@@ -23,7 +23,7 @@ async def Bot_stats():
 
 @client.command()
 async def test(ctx):
-	ctx.send('Nenhum teste configurado.')
+	ctx.send('Nenhum teste configurado. ')
 
 for file in os.listdir('./commands'):
 	if file.endswith('.py'):
