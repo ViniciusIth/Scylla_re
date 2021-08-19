@@ -2,6 +2,7 @@ import bot_functions as bf
 import discord
 from discord.ext import commands
 
+
 class Mod_utilities(commands.Cog):
 	def __init__(self, client):
 		self.client = client
@@ -24,14 +25,15 @@ class Mod_utilities(commands.Cog):
 						todel.append(msg)
 				await ctx.channel.delete_messages(todel)
 				await ctx.send(f'{len(todel)} mensagens deletadas', delete_after=3)
-		except commands.errors as errr:
-			ctx.send('Ops, algo deu errado o-o.', errr)
+		except Exception as e:
+			ctx.send('Ops, algo deu errado o-o.', e)
 		finally:
 		#Embed Log
 			embed_log=discord.Embed(title="Mensagens deletadas", description=f"{amount} mensagens foram deletadas do canal {ctx.channel}", color=discord.Colour.light_grey())
 			embed_log.set_footer(text=f"By {ctx.author}")
 			await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
 
+	#TODO detect if member was kicked or if it's not possible
 	@commands.command(help='Expulsa um membro do servidor')
 	@commands.has_permissions(kick_members=True)
 	async def kick(self, ctx, member:discord.User, *, reason=None):
@@ -42,7 +44,6 @@ class Mod_utilities(commands.Cog):
 		else:
 			embed_send.add_field(name='motivo', value=reason, inline=False)
 		embed_send.set_footer(text=f'By {ctx.author}')
-		await member.send(embed=embed_send)
 	#Embed Log
 		embed_log=discord.Embed(title='Expulso', description=f'{member} foi expulso do servidor Snek House.', color=discord.Colour.red())
 		if reason == None:
@@ -50,10 +51,66 @@ class Mod_utilities(commands.Cog):
 		else:
 			embed_log.add_field(name='motivo', value=reason, inline=False)
 		embed_log.set_footer(text=f'By {ctx.author}')
-		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
 	#Comando
-		await ctx.send(f'{member} kickado do servidor.\n {reason}', delete_after=2)
+		await ctx.send(f'{member} kickado do servidor.\nMotivo: {reason}', delete_after=5)
+		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
+		await member.send(embed=embed_send)
+		await ctx.guild.kick(member)
 
+	@commands.command(help='Bane um membro do servidor e desbane imediatamente, útil para apagar mensagens.')
+	@commands.has_guild_permissions(ban_members=True)
+	async def softban(self, ctx, member:discord.User, *, reason = None):
+	#Embed Membro
+		embed_send=discord.Embed(title='Expulso', description='Você foi expulso do servidor Snek House.', color=discord.Colour.random())
+		if reason == None:
+			pass
+		else:
+			embed_send.add_field(name='motivo', value=reason, inline=False)
+		embed_send.set_footer(text=f'By {ctx.author}')
+	#Embed Log
+		embed_log=discord.Embed(title='Softban', description=f'{member} tomou um softban.', color=discord.Colour.red())
+		if reason == None:
+			pass
+		else:
+			embed_log.add_field(name='motivo', value=reason, inline=False)
+		embed_log.set_footer(text=f'By {ctx.author}')
+	#Comando
+		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
+		await member.send(embed=embed_send)
+		await ctx.guild.unban(member)
+		await ctx.guild.ban(member)
+
+	@commands.command(help='Bane um membro do servidor.')
+	@commands.has_guild_permissions(ban_members=True)
+	async def ban(self, ctx, member:discord.User, *, reason = None):
+	#Embed Membro
+		embed_send=discord.Embed(title='Banido', description='Você foi banido do servidor Snek House.', color=discord.Colour.random())
+		if reason == None:
+			pass
+		else:
+			embed_send.add_field(name='motivo', value=reason, inline=False)
+		embed_send.set_footer(text=f'By {ctx.author}')
+	#Embed Log
+		embed_log=discord.Embed(title='Ban', description=f'{member} foi banido.', color=discord.Colour.red())
+		if reason == None:
+			pass
+		else:
+			embed_log.add_field(name='motivo', value=reason, inline=False)
+		embed_log.set_footer(text=f'By {ctx.author}')
+	#Comando
+		await member.send(embed=embed_send)
+		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
+		await ctx.guild.ban(member)
+
+	@commands.command(help='Desbane um membro do servidor.')
+	@commands.has_guild_permissions(ban_members=True)
+	async def unban(self, ctx, member:discord.User):
+	#Embed Log
+		embed_log=discord.Embed(title='Unban', description=f'{member} foi desbanido.', color=discord.Colour.red())
+		embed_log.set_footer(text=f'By {ctx.author}')
+	#Comando
+		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
+		await ctx.guild.unban(member)
 
 def setup(client):
 	client.add_cog(Mod_utilities(client))

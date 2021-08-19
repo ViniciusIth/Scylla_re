@@ -1,0 +1,18 @@
+	@commands.command()
+	async def test(self, ctx):
+
+		idade=discord.Embed(title='Idade', description='Seu cargo de idade. Esse cargo não deve interferir muito com a forma como você utiliza o servidor, mas permite que os membros moderem a forma como se comportam próximo de ti.', colour=0xfffffe )
+		idade.add_field(name='⠀', value='<:azultra:858027885419954207> ・ 18+', inline=False)
+		idade.add_field(name='⠀', value='<:azroyal:858027885427163152> ・ 15 ≈ 17', inline=False)
+		idade.add_field(name='⠀', value='<:aztado:858027885724696596> ・ 13 ≈ 14', inline=False)
+		idade.add_field(name='⠀', value='<:azbab:858027885796524035> ・ 12-', inline=False)
+
+		interesse=discord.Embed(title='Interesses', description='Seus interesses. Os cargos selecionados vão te dar acesso à diferentes categorias. (Para remover um cargo basta remover a reação)', colour=0xfffffe)
+		interesse.add_field(name='⠀', value=':art: ・ Arte', inline=False)
+		interesse.add_field(name='⠀', value=':camera: ・ Fotográfia', inline=False)
+		interesse.add_field(name='⠀', value=':musical_note: ・ Música', inline=False)
+		interesse.add_field(name='⠀', value=':spaghetti: ・ Culinária', inline=False)
+		interesse.add_field(name='⠀', value=':video_game: ・ Gaming', inline=False)
+
+		await ctx.send(embed=idade)
+		await ctx.send(embed=interesse)

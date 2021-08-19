@@ -1,5 +1,5 @@
 import sqlite3
-from PIL import ImageColor
+import numpy as np
 
 def rstr(text):
 	remove = {60: None, 62: None, 35: None, 64: None, 38: None, 33: None}
@@ -11,22 +11,44 @@ def getchan(row):
 	cursor = db.execute(f'SELECT {row} FROM server')
 	show = ''.join(cursor.fetchone())
 	print('Canal acessado:', show)
-	db.close(); print('Banco de dados fechado.')
 	return int(show)
 
-def hex_to_rgbit(col):
-	rgb = []
-	col = str(col)
-	col = ImageColor.getcolor(col, 'RGB')
-	for cor in col:
-		rgb.append(cor)
-	print(rgb[0], rgb[1], rgb[2])
-	return int(rgb[0]), int(rgb[1]), int(rgb[2])
+def compare_perms(old, new):
+	old_val = []
+	new_val = []
+	if old == new:
+		return False
+	else:
+		for op in old:
+			old_val.append(op)
+		for np in new:
+			if np not in old_val:
+				if np[1] == True:
+					new_val.append(f'✔️ {np[0]}')
+				else:
+					new_val.append(f'❌ {np[0]}')
+		return '\n'.join(new_val)
 
-def hex_to_rgbint(hex):
-	str(hex)
-	rgb = list(ImageColor.getcolor(hex, 'RGB'))
-	rgbint = ''.join(map(str, rgb))
-	return int(rgbint)
+def compare_roles(old, new):
+	old_val = []
+	new_val = []
+	final_lstr = []
 
-hex_to_rgbint('#0090ff')
+	for i in old:
+		old_val.append(i)
+	for i in new:
+		new_val.append(i)
+
+	removed_list = list(set(old_val) - set(new_val))
+	added_list = list(set(new_val) - set(old_val))
+
+	if added_list != []:
+		for i in added_list:
+			final_lstr.append(f'✔️  {i}')
+	if removed_list != []:
+		for i in removed_list:
+			final_lstr.append(f'❌ {i}')
+
+	final_lstr = '\n'.join(final_lstr)
+
+	return final_lstr
