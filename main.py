@@ -2,12 +2,14 @@ import os
 import random
 import subprocess
 
+from dotenv import load_dotenv
 import discord
 from discord.ext import commands, tasks
 
 subprocess.call('cls', shell=True)
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix = '..', case_insensitive = True, intents = intents)
+load_dotenv()
 
 @client.event
 async def on_ready():
@@ -25,4 +27,4 @@ for file in os.listdir('./commands'):
 	if file.endswith('.py'):
 		client.load_extension(f'commands.{file[:-3]}')
 
-client.run('ODU3MzY5Mzc1MzA3ODU3OTQy.YNOldA.pBXqn4vnoKkjE5itZMTpK-7WWB0')
+client.run(os.getenv('TOKEN'))
