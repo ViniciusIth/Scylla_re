@@ -33,7 +33,7 @@ class Mod_utilities(commands.Cog):
 			embed_log.set_footer(text=f"By {ctx.author}")
 			await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
 
-	#TODO detect if member was kicked or if it's not possible
+#TODO detect if member was kicked or if it's not possible
 	@commands.command(help='Expulsa um membro do servidor')
 	@commands.has_permissions(kick_members=True)
 	async def kick(self, ctx, member:discord.User, *, reason=None):
@@ -80,6 +80,8 @@ class Mod_utilities(commands.Cog):
 		await ctx.guild.unban(member)
 		await ctx.guild.ban(member)
 
+
+# TODO ban should say if it can ban or not
 	@commands.command(help='Bane um membro do servidor.')
 	@commands.has_guild_permissions(ban_members=True)
 	async def ban(self, ctx, member:discord.User, *, reason = None):

@@ -66,7 +66,7 @@ class Member_events(commands.Cog):
 # Member messages
 	@commands.Cog.listener()
 	async def on_message_delete(self, deleted: discord.Message):
-		if deleted.channel.id in [807399203050618910, 848921468233449522, 865392238723727371]:
+		if deleted.channel.id in [807399203050618910, 848921468233449522, 865392238723727371] or deleted.author == self.client.user:
 			return
 		else:
 			print('==== Message Delete Event ====')
@@ -95,7 +95,7 @@ class Member_events(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_message_edit(self, old: discord.Message, new: discord.Message):
-		if old.content == new.content or new.author.bot:
+		if old.content == new.content or new.author.bot or new.author == self.client.user:
 			return
 		now = dt.datetime.now().strftime("%d/%m/%Y, %H:%M")
 		print('==== Message Edit Event ====')
