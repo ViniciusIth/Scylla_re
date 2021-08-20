@@ -2,6 +2,7 @@ import os
 import random
 import subprocess
 
+from webserver import keep_alive
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands, tasks
@@ -27,4 +28,5 @@ for file in os.listdir('./commands'):
 	if file.endswith('.py'):
 		client.load_extension(f'commands.{file[:-3]}')
 
+keep_alive()
 client.run(os.environ['TOKEN'])
