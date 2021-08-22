@@ -10,7 +10,6 @@ from wikipedia.exceptions import DisambiguationError
 db = sqlite3.connect("./data/bot.db")
 cs = db.cursor()
 
-
 class Utilities(commands.Cog):
 	def __init__(self, client):
 		self.client = client
@@ -91,9 +90,8 @@ class Utilities(commands.Cog):
 		db.commit()
 		db.close()
 
-	@commands.command(
-		help='Mostra um artigo sobre o assunto escolhido.'
-	)
+	# TODO Asynchrounous wiki function.
+	@commands.command(help='Mostra um artigo sobre o assunto escolhido.')
 	async def wiki(self, ctx, *, search):
 
 		lang = "pt"
@@ -131,9 +129,7 @@ class Utilities(commands.Cog):
 			await searching.delete()
 			await ctx.send(f"Não foi possivel encontrar a página `{search}`")
 
-	@commands.command(
-		help='Mostra uma postagem aleatória do subreddit escolhido entre os 50 melhores.'
-	)
+	@commands.command(help='Mostra uma postagem aleatória do subreddit escolhido entre os 50 melhores.')
 	async def sub(self, ctx, *, subreddit):
 		reddit = asyncpraw.Reddit(
 			client_id="TI0_Tf0ZyJNY6AH7mq_9pg",
@@ -176,7 +172,6 @@ class Utilities(commands.Cog):
 		except:
 			await searching.delete()
 			await ctx.send("Não foi possivel encontrar esse subreddit")
-
 
 def setup(client):
 	client.add_cog(Utilities(client))

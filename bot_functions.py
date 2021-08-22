@@ -1,5 +1,4 @@
 import sqlite3
-import numpy as np
 
 def rstr(text):
 	remove = {60: None, 62: None, 35: None, 64: None, 38: None, 33: None}
