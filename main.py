@@ -27,7 +27,7 @@ async def Bot_stats():
 		bot_stats = list(map(str, text.split('\n')))
 	await client.change_presence(status=discord.Status.online, activity=discord.Game(random.choice(bot_stats)))
 
-@tasks.loop(seconds=10)
+@tasks.loop(minutes=30)
 async def keep_alive():
 	async with aiohttp.ClientSession() as session:
 		async with session.get('https://Scyllare.karonpa.repl.co') as response:

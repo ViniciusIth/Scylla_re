@@ -148,7 +148,7 @@ class Utilities(commands.Cog):
 			sub_list = []
 
 			if subreddit.over18:
-				await ctx.send("Calma lá amigão, esse subreddit não é FamIlY FrIenDlY")
+				await ctx.send("Calma lá amigão, este subreddit não é FamIlY FrIenDlY")
 				return
 
 			async for submission in subreddit.hot(limit=50):
