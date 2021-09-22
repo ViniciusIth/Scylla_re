@@ -15,9 +15,12 @@ load_dotenv()
 
 @client.event
 async def on_ready():
-	thread_run()
-	keep_alive.start()
-	Bot_stats.start()
+	# thread_run()
+	# keep_alive.start()
+	try:
+		Bot_stats.start()
+	except:
+		pass
 	print('Conexão alcançada com sucesso')
 
 @tasks.loop(minutes=5)

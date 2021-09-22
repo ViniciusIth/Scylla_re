@@ -18,6 +18,7 @@ class Server_management(commands.Cog):
 			UPDATE server 
 			SET invite = "{invite}"
 			''')
+			db.commit()
 			await ctx.send('O convite foi alterado com sucesso... provavelmente.')
 		else:
 			await ctx.send('O convite deve estar no formato `https://discord.com/invite/#######`')
@@ -30,6 +31,7 @@ class Server_management(commands.Cog):
 		UPDATE server
 		SET wel_chan = {chanid.id}
 		''')
+		db.commit()
 		await ctx.send('Canal de boas vindas atualizado com sucesso... provavelmente.')
 
 
@@ -40,6 +42,7 @@ class Server_management(commands.Cog):
 		UPDATE server
 		SET exi_chan = {chanid.id}
 		''')
+		db.commit()
 		await ctx.send('Canal de saída atualizado com sucesso... provavelmente.')
 
 
@@ -50,6 +53,7 @@ class Server_management(commands.Cog):
 		UPDATE server
 		SET log_chan = {chanid.id}
 		''')
+		db.commit()
 		await ctx.send('Canal de logs atualizado com sucesso... provavelmente.')
 
 
@@ -60,6 +64,7 @@ class Server_management(commands.Cog):
 		UPDATE server
 		SET del_chan = {chanid.id}
 		''')
+		db.commit()
 		await ctx.send('Canal de mensagens deletados atualizado com sucesso... provavelmente.')
 
 

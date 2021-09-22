@@ -1,7 +1,10 @@
 import bot_functions as bf
 import discord
 from discord.ext import commands
+import sqlite3
 
+db = sqlite3.connect("./data/bot.db")
+cs = db.cursor()
 
 class Mod_utilities(commands.Cog):
 	def __init__(self, client):
@@ -31,7 +34,9 @@ class Mod_utilities(commands.Cog):
 		#Embed Log
 			embed_log=discord.Embed(title="Mensagens deletadas", description=f"{amount} mensagens foram deletadas do canal {ctx.channel}", color=discord.Colour.light_grey())
 			embed_log.set_footer(text=f"By {ctx.author}")
+			print('==== Mass Delete Event ====')
 			await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
+			print('==== End Event ====\n')
 
 #TODO detect if member was kicked or if it's not possible
 	@commands.command(help='Expulsa um membro do servidor')
@@ -52,10 +57,12 @@ class Mod_utilities(commands.Cog):
 			embed_log.add_field(name='motivo', value=reason, inline=False)
 		embed_log.set_footer(text=f'By {ctx.author}')
 	#Comando
+		print('==== Member Kick Event ====')
 		await ctx.send(f'{member} kickado do servidor.\nMotivo: {reason}', delete_after=5)
 		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
 		await member.send(embed=embed_send)
 		await ctx.guild.kick(member)
+		print('==== End Event ====\n')
 
 	@commands.command(help='Bane um membro do servidor e desbane imediatamente, útil para apagar mensagens.')
 	@commands.has_guild_permissions(ban_members=True)
@@ -75,10 +82,12 @@ class Mod_utilities(commands.Cog):
 			embed_log.add_field(name='motivo', value=reason, inline=False)
 		embed_log.set_footer(text=f'By {ctx.author}')
 	#Comando
+		print('==== Softban Event ====')
 		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
 		await member.send(embed=embed_send)
 		await ctx.guild.unban(member)
 		await ctx.guild.ban(member)
+		print('==== End Event ====\n')
 
 
 # TODO ban should say if it can ban or not
@@ -100,9 +109,11 @@ class Mod_utilities(commands.Cog):
 			embed_log.add_field(name='motivo', value=reason, inline=False)
 		embed_log.set_footer(text=f'By {ctx.author}')
 	#Comando
+		print('==== Member Ban Event ====')
 		await member.send(embed=embed_send)
 		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
 		await ctx.guild.ban(member)
+		print('==== End Event ====\n')
 
 	@commands.command(help='Desbane um membro do servidor.')
 	@commands.has_guild_permissions(ban_members=True)
@@ -111,8 +122,10 @@ class Mod_utilities(commands.Cog):
 		embed_log=discord.Embed(title='Unban', description=f'{member} foi desbanido.', color=discord.Colour.red())
 		embed_log.set_footer(text=f'By {ctx.author}')
 	#Comando
+		print('==== Member Unban Event ====')
 		await self.client.get_channel(bf.getchan('log_chan')).send(embed=embed_log)
 		await ctx.guild.unban(member)
+		print('==== End Event ====\n')
 
 def setup(client):
 	client.add_cog(Mod_utilities(client))

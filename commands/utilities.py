@@ -1,8 +1,15 @@
-import random
+from asyncio import TimeoutError as AsyncTimeOutError
 import sqlite3
+from discord import file
+import qrcode
+from io import BytesIO
+from re import match, search
+import string
+from random import choice, randint
 
 import discord
 import asyncpraw
+from qrcode.image.pil import PilImage
 import wikipedia
 from discord.ext import commands
 from wikipedia.exceptions import DisambiguationError
@@ -87,8 +94,6 @@ class Utilities(commands.Cog):
 	async def invite(self, ctx):
 		invite = cs.execute("SELECT invite FROM server").fetchone()
 		await ctx.send("".join(invite))
-		db.commit()
-		db.close()
 
 	# TODO Asynchrounous wiki function.
 	@commands.command(help='Mostra um artigo sobre o assunto escolhido.')
@@ -155,7 +160,7 @@ class Utilities(commands.Cog):
 				if submission.url[-3:] in ["jpg", "png", "gif"]:
 					sub_list.append(submission)
 
-			submission = random.choice(sub_list)
+			submission = choice(sub_list)
 
 			await submission.author.load()
 			msg = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}')
@@ -172,6 +177,83 @@ class Utilities(commands.Cog):
 		except:
 			await searching.delete()
 			await ctx.send("Não foi possivel encontrar esse subreddit")
+
+	@commands.command(aliases=['r', 'dice'], help='Rola um dado')
+	async def roll(self, ctx: commands.context.Context, roll):
+
+		dice_pattern = r'(\d+|)d(\d+)(\+\+\d+|\-\-\d+|\d+|[\+\-]\d+|)'
+		if match(dice_pattern, roll):
+			vals_list = []
+			modif_list = []
+
+			sep = search(dice_pattern, roll)
+			times = int(sep.group(1)) if sep.group(1) != '' else 1
+			value = int(sep.group(2))
+			modif = sep.group(3) or 0; mod = f'{modif[0]} {modif[1:]}' if modif != 0 else ''
+
+			if times >= 100 or value >= 100000:
+				await ctx.reply('A quantidade de dados não deve passar de 100000.')
+				return
+
+			for i in range(times):
+				gen = randint(1, value)
+				vals_list.append(gen)
+				modif_list.append(f'{gen}+{modif}')
+
+			if match(r'(\d+|)d(\d+)([\+\-]\d+|)', roll):
+				result = eval(f'{sum(vals_list)}+{modif}')
+			else:
+				result = eval("+".join(modif_list))
+
+			print(modif_list); print(vals_list); print(result)
+
+
+			await ctx.reply(f'{result} ⟵ {sorted(vals_list, reverse=True)} {times}d{value} {mod}')
+
+
+	@commands.command()
+	async def password(self, ctx: commands.Context, lenght: int = 16, num: int = 5):
+		nl = '\n'
+		if lenght > 128 or num > 25:
+			await ctx.send('Tamanho limite ultrapassado. Serão geradas 10 senhas de 128 digitos.')
+			lenght, num = 128, 10 
+		
+		types = {'4️⃣':string.ascii_letters + string.digits + string.punctuation, '3️⃣':string.ascii_letters + string.digits, '2️⃣':string.ascii_letters, '1️⃣':string.digits}
+		
+		passhelp = await ctx.reply('A senhas serão enviadas para o seu privado. Reaja com um dos emojis: \n1️⃣ Números \n2️⃣ Letras \n3️⃣ Números e letras \n4️⃣ Todos os simbolos')
+		for emoji in ['1️⃣', '2️⃣', '3️⃣', '4️⃣']:
+			await passhelp.add_reaction(emoji)
+		
+		try:
+			def check(reaction: discord.Reaction, user):
+				return str(reaction.emoji) in ['1️⃣', '2️⃣', '3️⃣', '4️⃣'] and user == ctx.author
+			reaction, user = await self.client.wait_for('reaction_add', timeout=15.0, check=check)
+		except AsyncTimeOutError:
+			await passhelp.reply('O tempo de resposta acabou.', delete_after=5)
+			return
+
+		generator = types.get(reaction.emoji)
+		generated = []
+
+		for x in range(num+1):
+			generating = ''
+			for n in range(lenght+1):
+				
+				generating += choice(generator)
+			generated.append(generating)
+
+		await passhelp.delete()
+		await ctx.reply('Senhas geradas. Cheque seu privado.')
+
+		await ctx.author.send(f'Senhas geradas: \n{nl.join(generated)}')
+
+	@commands.command(aliases=['qr'])
+	async def qrcode(self, ctx: commands.Context, link):
+		img: PilImage = qrcode.make(link)
+		with BytesIO() as image_binary:
+			img.save(image_binary, 'PNG')
+			image_binary.seek(0)
+			await ctx.reply(file=discord.File(fp=image_binary, filename=f'qr/{link[:15]}.png'))
 
 def setup(client):
 	client.add_cog(Utilities(client))

@@ -27,6 +27,7 @@ class Member_events(commands.Cog):
 			INSERT INTO members (id)
 			Values ({user.id})
 		''')
+		db.commit()
 
 		with open('./data/wel_img.txt', encoding='utf-8') as wel_img:
 			img = wel_img.read()
@@ -53,6 +54,7 @@ class Member_events(commands.Cog):
 		cs.execute(f'''
 			DELETE FROM members WHERE id = {member.id}
 		''')
+		db.commit()
 		
 		msg = discord.Embed(description=f'O membro `{member.name}` saiu do servidor\nid = {member.id}')
 		msg.set_author(name=f'{member.name}#{member.discriminator}', icon_url=member.avatar_url)
